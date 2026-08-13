@@ -293,6 +293,9 @@
     { "path": "./packages/lsp/lsp" },
     { "path": "./packages/lsp/lsp-stdio" },
     { "path": "./packages/lsp/tool-lsp" },
-    { "path": "./apps/cli" }
+    { "path": "./packages/bundle/electron" },
+    { "path": "./packages/host/electron" },
+    { "path": "./apps/cli" },
+    { "path": "./apps/electron/tsconfig.host.json" }
   ]
 }

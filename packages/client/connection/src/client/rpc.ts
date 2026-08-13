@@ -9,6 +9,7 @@ import type { ClientConnectionRpc } from '../rpc.ts'
 import { randomUuid } from './random-uuid.ts'
 
 const INTERNAL_BASE = 'http://dsh.internal'
+const ELECTRON_BASE = 'dsh://host'
 const CHANNEL_PATTERN = /^\/[A-Za-z0-9._~-]+$/
 const ENDPOINT_SEGMENT_PATTERN = /^[A-Za-z0-9_$.-]+$/
 
@@ -49,8 +50,14 @@ export function createWebConnectionRpc(): ClientConnectionRpc {
 }
 
 function resolveBase(): string {
+  if (isElectron()) return ELECTRON_BASE
   const location = (globalThis as { location?: { origin?: string } }).location
   return location?.origin !== undefined && location.origin !== 'null' ? location.origin : INTERNAL_BASE
+}
+
+/** True when the renderer runs under the Electron `dsh://` carrier (set by preload). */
+function isElectron(): boolean {
+  return (globalThis as { __DSH_ELECTRON__?: boolean }).__DSH_ELECTRON__ === true
 }
 
 function assertTarget(channel: string, endpoint: string): void {

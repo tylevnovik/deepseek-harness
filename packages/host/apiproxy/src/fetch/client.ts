@@ -233,6 +233,9 @@ type UnaryTimeoutPolicy = 'default' | 'caller-signal-only'
 /** URL base for in-process handler injection (fake authority, opencode precedent). */
 const INTERNAL_BASE = 'http://dsh.internal'
 
+/** URL base for the Electron renderer's `dsh://` protocol carrier (registered by the main process). */
+const ELECTRON_BASE = 'dsh://host'
+
 /**
  * Abstract fetch-carrier client. Subclasses supply the transport (doFetch) and may refine the
  * per-message tap (onEnvelope) — platform aspects stay in subclasses, protocol invariants stay
@@ -537,6 +540,25 @@ export class InProcessApiClient extends AbstractApiClient {
         .then(resolve, reject)
         .finally(() => { signal.removeEventListener('abort', onAbort) })
     })
+  }
+}
+
+/**
+ * Electron renderer client over the `dsh://` custom protocol. Unary calls and
+ * the mux/host event streams all ride `globalThis.fetch` against the fake
+ * `dsh://host` authority that the main process registers with protocol.handle;
+ * the base class's SSE path (`readSse`) is reused verbatim, so the event
+ * streams need no WebSocket equivalent.
+ */
+export class ElectronApiClient extends AbstractApiClient {
+  /** Transport aspect: the `dsh://` scheme is handled by the Electron main process. */
+  protected override doFetch(input: URL, init?: RequestInit): Promise<Response> {
+    return globalThis.fetch(input, init)
+  }
+
+  /** `file://` has no origin; every unary/stream URL is rebuilt against the dsh:// authority. */
+  protected override resolveBase(): string {
+    return ELECTRON_BASE
   }
 }
 

@@ -1,0 +1,31 @@
+# The dsh-electron bundle patch: the browser surface over an inert webServer
+# carrier instead of a listening node:http server. Applied after dsh-web-app's
+# insert, so it patches web-app rows by id; the carrier the Electron main
+# process registers under the `dsh://` protocol owns all transport.
+#
+# A patch replaces the targeted row's whole `config` (never its `name`), so the
+# webserver row is disabled and the inert carrier inserted under its own id.
+
+# ── swap the HTTP carrier for the inert Electron carrier ────────────────────
+
+# `dsh-host-webserver` binds a TCP port on activation; the Electron surface
+# carries every request over `dsh://` instead, so the HTTP server row is
+# disabled and replaced by a webServer-shaped stub that binds nothing.
+- id: webserver
+  disabled: true
+
+- insert:
+    - id: electron-carrier
+      name: '@deepseek-ai/dsh-host-electron'
+
+# ── surface values for the file:// renderer ─────────────────────────────────
+
+# No URL to print (no port), no model-visible web-surface orientation (the
+# model's user is in a desktop window, not a browser page), and no SPA dist
+# server over the fallback seat — Electron loads dist over file://.
+- id: web-runtime
+  config:
+    printUrl: false
+    surfaceContext: false
+    trustedHosts: []
+    serveFrontend: false

@@ -8,6 +8,7 @@ import type { HostDescription, IApiClient } from './api.ts'
 import { ConnectionController, type ConnectionConfig, type ConnectionSinks, type ConnectionState } from './connection.ts'
 import { FixtureApiClient } from './fixture.ts'
 import { WebApiClient } from './web-api-client.ts'
+import { ElectronApiClient } from '@deepseek-ai/dsh-host-apiproxy/client'
 import { createWebConnectionRpc } from './rpc.ts'
 import { isLoopbackHostname } from '../loopback-hostname.ts'
 import type { ClientConnectionRpc } from '../rpc.ts'
@@ -85,7 +86,11 @@ export function apply(ctx: Context): void {
   const pageLocation = typeof location === 'undefined' ? undefined : location
   const fixture = pageLocation !== undefined && new URLSearchParams(pageLocation.search).has('fixture')
   const fixtureClient = fixture ? new FixtureApiClient() : undefined
-  const api: IApiClient = fixtureClient ?? new WebApiClient()
+  // The Electron renderer carries RPC over the `dsh://` protocol (registered by
+  // the main process) instead of same-origin HTTP; the `__DSH_ELECTRON__` flag
+  // is set by the preload before any client plugin materializes.
+  const electron = (globalThis as { __DSH_ELECTRON__?: boolean }).__DSH_ELECTRON__ === true
+  const api: IApiClient = fixtureClient ?? (electron ? new ElectronApiClient() : new WebApiClient())
   const rpc = fixtureClient?.rpc ?? createWebConnectionRpc()
   let started = false
   let description: HostDescription | undefined

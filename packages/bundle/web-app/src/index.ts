@@ -47,12 +47,20 @@ export interface Config {
   surfaceContext: boolean
   /** Explicit `--trusted-host` authorities from this invocation. */
   trustedHosts: string[]
+  /**
+   * Mount the `frontend-static` SPA dist server over the webserver fallback
+   * seat. The Electron surface loads the dist over `file://` instead, so it
+   * sets this false and carries its own renderer assets; the dist index is
+   * then not resolved at boot.
+   */
+  serveFrontend?: boolean
 }
 
 export const Config: z<Config> = z.object({
   printUrl: z.boolean().default(true),
   surfaceContext: z.boolean().default(true),
   trustedHosts: z.array(String).default([]),
+  serveFrontend: z.boolean().default(true),
 })
 
 /** Bind-dependent Web values shared by the trust fence and URL display. */
@@ -136,7 +144,9 @@ export function apply(ctx: Context, config: Config): void {
   const runtime = resolveLanTrust(ctx.webServer.host, config.trustedHosts)
   // Release dependent rows only after bind-dependent trust has been sampled once.
   ctx.provide(WEB_RUNTIME_SERVICE, runtime)
-  ctx.plugin(FrontendStatic, { distIndex: internals.resolveDistIndex() })
+  if (config.serveFrontend !== false) {
+    ctx.plugin(FrontendStatic, { distIndex: internals.resolveDistIndex() })
+  }
   if (config.surfaceContext) {
     ctx.inject(['systemPrompt'], (promptCtx) => {
       addHarnessSourceSection(promptCtx, SOURCE_ROOT)

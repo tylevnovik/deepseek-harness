@@ -1,0 +1,19 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "lib/types",
+    "tsBuildInfoFile": "lib/tsconfig.host.tsbuildinfo",
+    "lib": ["ES2024", "DOM", "DOM.Iterable"]
+  },
+  "files": [
+    "src/main.ts",
+    "src/preload.ts",
+    "src/node-module-stub.ts"
+  ],
+  "references": [
+    { "path": "../../vendor/cordis" },
+    { "path": "../../packages/host/apiproxy" },
+    { "path": "../../apps/cli" }
+  ]
+}

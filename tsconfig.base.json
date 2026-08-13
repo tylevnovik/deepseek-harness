@@ -167,6 +167,7 @@
       "@deepseek-ai/dsh-host-directory-picker-auto/*": ["./packages/host/directory-picker-auto/src/*"],
       "@deepseek-ai/dsh-host-apiproxy/client": ["./packages/host/apiproxy/src/fetch/client.ts"],
       "@deepseek-ai/dsh-host-apiproxy/*": ["./packages/host/apiproxy/src/*"],
+      "@deepseek-ai/dsh-host-electron": ["./packages/host/electron/src"],
       "@deepseek-ai/dsh-host-webserver": ["./packages/host/webserver/src"],
       "@deepseek-ai/dsh-host-frontend-static": ["./packages/host/frontend-static/src"],
       "@deepseek-ai/dsh-host-plugin-inventory": ["./packages/host/plugin-inventory/src"],
@@ -220,6 +221,10 @@
       "@deepseek-ai/dsh-client-ui-settings-plugin-inventory": ["./packages/client/ui-settings-plugin-inventory/src"],
       "@deepseek-ai/dsh-client-locale": ["./packages/client/locale/src"],
       "@deepseek-ai/dsh-client-web": ["./packages/client/web/src"],
+      // The apps are not under packages/*, so the generic wildcard cannot map
+      // them; the CLI app exposes a programmatic `runProfile` entry the
+      // Electron main process imports.
+      "@deepseek-ai/dsh": ["./apps/cli/src"],
       // sdk/ folders are role-named without their npm-side sdk/jsonrpc prefixes,
       // so the generic wildcard cannot map these three package names.
       "@deepseek-ai/dsh-sdk-client": ["./packages/sdk/client/src"],
