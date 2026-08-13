@@ -30,8 +30,15 @@
     ],
     "win": {
       "target": [
-        "portable"
+        "nsis",
+        "zip"
       ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
     }
   },
   "scripts": {

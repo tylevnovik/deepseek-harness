@@ -145,7 +145,7 @@ async function main(): Promise<void> {
   await materializeStagedLinks(STAGING)
   verifyStaged()
   await run('electron-builder', electronBuilderBin(), [
-    '--win', 'portable',
+    '--win',
     '--publish', 'never',
     '--projectDir', STAGING,
     '--config.electronDist', findElectronDist(),
